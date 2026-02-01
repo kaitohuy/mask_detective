@@ -23,10 +23,10 @@ label start:
     
     # Nhạc nền (Bỏ comment và sửa đường dẫn khi có file nhạc)
     # Dùng placeholder hoặc file nhạc intro nếu có
-    play music "audio/true-ending.mp3" fadein 6.0
+    play music "audio/true-ending.mp3" fadein 0.5
 
     # Intro text effect
-    show text "{size=60}{b}{color=#f1c40f}MASK DETECTIVE{/color}{/b}{/size}" with dissolve
+    show text "{size=60}{b}{color=#f1c40f}MASK DETECTIVE{/color}{/b}{/size}" at Position(yalign=0.2) with dissolve
     pause 4.0 
     hide text with dissolve
 
