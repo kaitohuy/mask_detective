@@ -21,43 +21,50 @@ screen m1_investigation_screen():
     
     # === AREA: LIVING ROOM (Characters here) ===
     if m1_current_area == "living_room":
-        add "bg m1_living_room"
+        add Transform("images/map01/BG/Living_room.png", size=(1920, 1080))
+        
+        # === POSER TOOL ===
+        use m1_investigation_poser
         
         # Thomas (Left)
         imagebutton:
-            idle Transform("images/map01/character/Thomas_Serve.png", zoom=0.55)
-            hover Transform("images/map01/character/Thomas_Serve.png", zoom=0.58, matrixcolor=TintMatrix("#ffff88"))
-            xpos 80
-            ypos 420
+            idle Transform("images/map01/character/Thomas_Serve.png", zoom=persistent.m1_inv_thomas_zoom)
+            hover Transform("images/map01/character/Thomas_Serve.png", zoom=persistent.m1_inv_thomas_zoom + 0.03, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_inv_thomas_x
+            ypos persistent.m1_inv_thomas_y
             action Return("thomas")
-            tooltip "Thomas - Người hầu"
+            tooltip "Thomas - Nguoi hau"
         
         # Leonard (Left-Center)
         imagebutton:
-            idle Transform("images/map01/character/leonard_stand.png", zoom=0.55)
-            hover Transform("images/map01/character/leonard_stand.png", zoom=0.58, matrixcolor=TintMatrix("#ffff88"))
-            xpos 400
-            ypos 380
+            idle Transform("images/map01/character/leonard_stand.png", zoom=persistent.m1_inv_leonard_zoom)
+            hover Transform("images/map01/character/leonard_stand.png", zoom=persistent.m1_inv_leonard_zoom + 0.03, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_inv_leonard_x
+            ypos persistent.m1_inv_leonard_y
             action Return("leonard")
             tooltip "Leonard - Em trai Victor"
         
         # Sophia (Right-Center)
         imagebutton:
-            idle Transform("images/map01/character/sophia_stand.png", zoom=0.55)
-            hover Transform("images/map01/character/sophia_stand.png", zoom=0.58, matrixcolor=TintMatrix("#ffff88"))
-            xpos 850
-            ypos 400
+            idle Transform("images/map01/character/sophia_stand.png", zoom=persistent.m1_inv_sophia_zoom)
+            hover Transform("images/map01/character/sophia_stand.png", zoom=persistent.m1_inv_sophia_zoom + 0.03, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_inv_sophia_x
+            ypos persistent.m1_inv_sophia_y
             action Return("sophia")
-            tooltip "Sophia - Vợ Victor"
+            tooltip "Sophia - Vo Victor"
         
         # Elena (Right)
         imagebutton:
-            idle Transform("images/map01/character/elena_after_killed_stand.png", zoom=0.55)
-            hover Transform("images/map01/character/elena_after_killed_stand.png", zoom=0.58, matrixcolor=TintMatrix("#ffff88"))
-            xpos 1250
-            ypos 380
+            idle Transform("images/map01/character/elena_after_killed_stand.png", zoom=persistent.m1_inv_elena_zoom)
+            hover Transform("images/map01/character/elena_after_killed_stand.png", zoom=persistent.m1_inv_elena_zoom + 0.03, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_inv_elena_x
+            ypos persistent.m1_inv_elena_y
             action Return("elena")
-            tooltip "Elena - Cô của Sophia"
+            tooltip "Elena - Co cua Sophia"
         
         # Navigation arrows
         # Right -> Hallway
@@ -78,24 +85,27 @@ screen m1_investigation_screen():
     
     # === AREA: HALLWAY (with trash bin) ===
     elif m1_current_area == "hallway":
-        add "bg m1_hallway"
+        add Transform("bg m1_hallway", size=(1920, 1080))
+        use m1_hallway_poser
         
         # Trash Bin - clickable to open puzzle
         imagebutton:
-            idle Transform("images/map01/object/bin.png", zoom=0.5)
-            hover Transform("images/map01/object/bin.png", zoom=0.55, matrixcolor=TintMatrix("#ffff88"))
-            xpos 1400
-            ypos 700
+            idle Transform("images/map01/object/bin.png", zoom=persistent.m1_hall_bin_zoom)
+            hover Transform("images/map01/object/bin.png", zoom=persistent.m1_hall_bin_zoom + 0.05, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_hall_bin_x
+            ypos persistent.m1_hall_bin_y
             action Return("open_trash")
             tooltip "🗑 Thùng rác"
         
         # Handkerchief on floor
         if "Khăn Tay" not in m1_inventory:
             imagebutton:
-                idle Transform("images/map01/object/handkerchief.png", zoom=0.4)
-                hover Transform("images/map01/object/handkerchief.png", zoom=0.45, matrixcolor=TintMatrix("#ffff88"))
-                xpos 600
-                ypos 780
+                idle Transform("images/map01/object/handkerchief.png", zoom=persistent.m1_hall_towel_zoom)
+                hover Transform("images/map01/object/handkerchief.png", zoom=persistent.m1_hall_towel_zoom + 0.05, matrixcolor=TintMatrix("#ffff88"))
+                focus_mask True
+                xpos persistent.m1_hall_towel_x
+                ypos persistent.m1_hall_towel_y
                 action Return("search_hallway")
                 tooltip "Khăn tay trên sàn"
         
@@ -117,7 +127,7 @@ screen m1_investigation_screen():
     
     # === AREA: BATHROOM ===
     elif m1_current_area == "bathroom":
-        add "bg m1_bathroom"
+        add Transform("bg m1_bathroom", size=(1920, 1080))
         
         # Victor's body
         add "images/map01/character/Victor_dead.png":
@@ -145,15 +155,7 @@ screen m1_investigation_screen():
     
     # === AREA: MAIN HALL ===
     elif m1_current_area == "main_hall":
-        add "images/map01/BG/Main_hall.png"
-        
-        # Just a transition area now
-        frame:
-            xalign 0.5
-            yalign 0.5
-            padding (30, 20)
-            background Solid("#00000080")
-            text "Sảnh chính - Không có gì đáng chú ý ở đây." size 20 color "#aaa"
+        add Transform("images/map01/BG/Main_hall.png", size=(1920, 1080))
         
         # Up -> Living Room
         imagebutton:
@@ -162,6 +164,16 @@ screen m1_investigation_screen():
             xalign 0.5
             ypos 80
             action SetVariable("m1_current_area", "living_room")
+        
+        # Hidden Capsule (Requires Thomas Affection 100)
+        if m1_affection.get("Thomas", 0) >= 100 and "Vỏ Thuốc" not in m1_evidence:
+            imagebutton:
+                idle Transform("images/map01/object/xyanua.png", zoom=0.1) 
+                hover Transform("images/map01/object/xyanua.png", zoom=0.12, matrixcolor=TintMatrix("#ffff88"))
+                xpos 1600
+                ypos 900
+                action Return("found_capsule")
+                tooltip "Vật thể lạ"
     
     # === TOOLTIP ===
     $ tooltip = GetTooltip()
@@ -173,19 +185,7 @@ screen m1_investigation_screen():
             background Solid("#000000CC")
             text "[tooltip]" size 22 color "#fff"
     
-    # === STATUS BAR (Bottom) ===
-    frame:
-        xalign 0.0
-        yalign 1.0
-        xsize 400
-        padding (15, 12)
-        background Solid("#000000CC")
-        
-        hbox:
-            spacing 20
-            text "🧠 [m1_mind]" size 16 color "#0f0"
-            text "⏰ [m1_time]" size 16 color "#ff0"
-            text "📍 [m1_current_area]" size 14 color "#aaa"
+
     
     # === JUDGMENT BUTTON (Bottom Right) ===
     frame:

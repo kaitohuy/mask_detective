@@ -3,7 +3,16 @@
 image bg m1_hall = Transform("images/map01/BG/Main_hall.png", size=(1920, 1080))
 image bg m1_hallway = Transform("images/map01/BG/hallway.png", size=(1920, 1080))
 image bg m1_bathroom = Transform("images/map01/BG/bath_room.png", size=(1920, 1080))
-image bg m1_kitchen = Transform("images/map01/BG/Living_room.png", size=(1920, 1080)) # Using Living Room as placeholder/kitchen area
+image bg m1_kitchen = Transform("images/map01/BG/Living_room.png", size=(1920, 1080))
+# Endings
+image bg m1_bad_end_1 = Transform("images/map01/BG/bad_ending1.png", size=(1920, 1080))
+image bg m1_bad_end_2 = Transform("images/map01/BG/bad_ending2.png", size=(1920, 1080))
+image bg m1_bad_end_3 = Transform("images/map01/BG/bad_ending3.png", size=(1920, 1080))
+image bg m1_bad_end_final = Transform("images/map01/BG/bad3_ending.png", size=(1920, 1080)) # For "Bad Ending 2" (Game Over)
+
+image bg m1_true_end_1 = Transform("images/map01/BG/true_ending1.jpg", size=(1920, 1080))
+image bg m1_true_end_2 = Transform("images/map01/BG/true_ending2.png", size=(1920, 1080))
+image bg m1_true_end_3 = Transform("images/map01/BG/true_ending3.png", size=(1920, 1080))
 
 # Persistent Positions for Selection Screen (X, Y, Zoom, XZoom for each character)
 default persistent.m1_sel_v_x = 100
@@ -31,8 +40,20 @@ default persistent.m1_sel_t_y = 200
 default persistent.m1_sel_t_zoom = 1.0
 default persistent.m1_sel_t_xzoom = 1.0
 
+# Crowd 1 (Selection Mode - Unused but prevents crash)
+default persistent.m1_sel_c1_x = 300
+default persistent.m1_sel_c1_y = 600
+default persistent.m1_sel_c1_zoom = 1.0
+default persistent.m1_sel_c1_xzoom = 1.0
+
+# Crowd 2 (Selection Mode - Unused but prevents crash)
+default persistent.m1_sel_c2_x = 1600
+default persistent.m1_sel_c2_y = 600
+default persistent.m1_sel_c2_zoom = 1.0
+default persistent.m1_sel_c2_xzoom = 1.0
+
 screen m1_selection_screen():
-    add "bg m1_hall"
+    # add "bg m1_hall" # Removed to show Crowd from Master Layer
     
     # Victor (Left)
     imagebutton:
@@ -99,6 +120,8 @@ image m1_l_img = "images/map01/character/leonard_stand.png"
 image m1_s_img = "images/map01/character/sophia_stand.png"
 image m1_e_img = "images/map01/character/elena_before_killed_stand.png"
 image m1_t_img = "images/map01/character/Thomas_Serve.png"
+image m1_crowd_1 = "images/map01/character/crowed.png"
+image m1_crowd_2 = "images/map01/character/crowed.png"
 
 # Define Characters with Images
 define m1_v = Character("Victor", color="#800000", image="m1_v_img")
@@ -135,6 +158,18 @@ default persistent.m1_t_ypos = 1080
 default persistent.m1_t_zoom = 1.0
 default persistent.m1_t_xzoom = 1.0
 
+# Crowd 1 (Left)
+default persistent.m1_c1_xpos = 300
+default persistent.m1_c1_ypos = 1080
+default persistent.m1_c1_zoom = 1.0
+default persistent.m1_c1_xzoom = 1.0
+
+# Crowd 2 (Right)
+default persistent.m1_c2_xpos = 1600
+default persistent.m1_c2_ypos = 1080
+default persistent.m1_c2_zoom = 1.0
+default persistent.m1_c2_xzoom = -1.0 # Flip for variety
+
 transform m1_v_tf:
     xpos persistent.m1_v_xpos ypos persistent.m1_v_ypos
     xanchor 0.5 yanchor 1.0
@@ -160,6 +195,21 @@ transform m1_t_tf:
     xanchor 0.5 yanchor 1.0
     zoom persistent.m1_t_zoom xzoom persistent.m1_t_xzoom
 
+transform m1_c1_tf:
+    xpos persistent.m1_c1_xpos ypos persistent.m1_c1_ypos
+    xanchor 0.5 yanchor 1.0
+    zoom persistent.m1_c1_zoom xzoom persistent.m1_c1_xzoom
+
+transform m1_c2_tf:
+    xpos persistent.m1_c2_xpos ypos persistent.m1_c2_ypos
+    xanchor 0.5 yanchor 1.0
+    zoom persistent.m1_c2_zoom xzoom persistent.m1_c2_xzoom
+
+transform m1_interrogate_tf:
+    xalign 0.15
+    yalign 1.0
+    zoom 1.3
+
 # Variables
 default m1_mind = 100
 default m1_fear = "None"
@@ -181,9 +231,9 @@ default m1_puzzle_border_idx = 0
 default m1_puzzle_feather_idx = 0
 default m1_puzzle_solved = False
 
-define m1_eye_options = ["Tròn", "Mắt Mèo", "Vuông"]
+define m1_eye_options = ["Kiểu 1", "Kiểu 2", "Kiểu 3", "Kiểu 4"]
 define m1_border_options = ["Bạc", "Vàng", "Đồng"]
-define m1_feather_options = ["Không có", "Xanh", "Tím"]
+define m1_feather_options = ["Xanh", "Hồng", "Tím"]
 
 # UI Images
 image ui_icon_book = "images/map01/UI/closebook.png"
@@ -196,37 +246,37 @@ screen m1_hud():
     frame:
         xalign 0.0
         yalign 0.0
-        xmargin 15
-        ymargin 15
-        padding (15, 12)
-        background Solid("#000000CC")
+        xmargin 20
+        ymargin 20
+        padding (25, 20)
+        background Frame("images/map01/UI/ui_text.png", 10, 10)
         
         vbox:
-            spacing 6
+            spacing 10
             
             # Mind
             hbox:
-                spacing 8
-                text "🧠" size 18
-                text "Mind:" size 16 color "#aaa"
-                text "[m1_mind]" size 16 color "#0f0" bold True
+                spacing 10
+                text "🧠" size 26
+                text "Mind:" size 22 color "#aaa"
+                text "[m1_mind]" size 22 color "#0f0" bold True
             
             # Fear
             hbox:
-                spacing 8
-                text "😨" size 18
-                text "Nỗi sợ:" size 16 color "#aaa"
+                spacing 10
+                text "😨" size 26
+                text "Nỗi sợ:" size 22 color "#aaa"
                 if m1_fear and m1_fear != "None":
-                    text "[m1_fear]" size 14 color "#f88"
+                    text "[m1_fear]" size 20 color "#f88"
                 else:
-                    text "Không" size 14 color "#888"
+                    text "Không" size 20 color "#888"
             
             # Time/Days
             hbox:
-                spacing 8
-                text "⏰" size 18
-                text "Thời gian:" size 16 color "#aaa"
-                text "[m1_time]" size 16 color "#ff0" bold True
+                spacing 10
+                text "⏰" size 24
+                text "Thời gian:" size 22 color "#aaa"
+                text "[m1_time]" size 22 color "#ff0" bold True
     
     # === TOOLBAR (Top-Right) ===
     hbox:
@@ -239,12 +289,14 @@ screen m1_hud():
             idle Transform("images/map01/UI/bag.png", zoom=0.35)
             hover Transform("images/map01/UI/bag.png", zoom=0.4, matrixcolor=TintMatrix("#ffff88"))
             action Show("m1_inventory_screen")
-        
-        # Notebook Button  
-        imagebutton:
-            idle Transform("images/map01/UI/closebook.png", zoom=0.35)
-            hover Transform("images/map01/UI/closebook.png", zoom=0.4, matrixcolor=TintMatrix("#ffff88"))
-            action ShowMenu("m1_notebook")
+            
+    # Notebook Button (Bottom-Right)
+    imagebutton:
+        idle Transform("images/map01/UI/closebook.png", zoom=0.35)
+        hover Transform("images/map01/UI/closebook.png", zoom=0.4, matrixcolor=TintMatrix("#ffff88"))
+        xalign 0.90
+        yalign 0.98
+        action ShowMenu("m1_notebook")
 
 screen m1_dev_overlay():
     zorder 200
@@ -282,7 +334,7 @@ screen m1_notebook():
             hbox:
                 xalign 0.5
                 spacing 20
-                add "ui_bg_book" yalign 0.5 zoom 0.5 # Small icon header
+                add "ui_icon_book" yalign 0.5 zoom 0.5 # Small icon header
                 text "SỒ TAY ĐIỀU TRA" color "#3e2723" size 50 yalign 0.5 bold True
 
             # Tabs
@@ -301,7 +353,7 @@ screen m1_notebook():
 
 screen m1_notebook_notes():
     viewport:
-        xsize 900 ysize 500
+        xsize 900 ysize 450
         xalign 0.5
         scrollbars "vertical"
         mousewheel True
@@ -315,42 +367,130 @@ screen m1_notebook_notes():
                     text "• [clue]" color "#000" size 25
 
 screen m1_notebook_puzzle():
-    vbox:
+    # Puzzle Content
+    hbox:
         xalign 0.5
-        spacing 30
+        yalign 0.5
+        spacing 50
         
-        text "Tái tạo đặc điểm hung thủ:" color "#000" xalign 0.5
+        # Left Panel: Visual Assembly (Image Composition)
+        frame:
+            xsize 400
+            ysize 450
+            padding (20, 20)
+            background Solid("#f0f0f0")
+            
+            # Composite Mask Display
+            # Layer Order: Shape -> Border -> Feather
+            
+            # 1. Base Shape (Eye)
+            add "images/map01/mark/shape{}.png".format(m1_puzzle_eyes_idx + 1):
+                xalign 0.5
+                yalign 0.5
+                zoom 0.8
+                
+            # 2. Feather (If selected)
+            # Map index to color: 0=Blue, 1=Pink, 2=Purple
+            if m1_puzzle_feather_idx == 0:
+                add "images/map01/mark/feather_mask5.png" xalign 0.5 yalign 0.2 zoom 0.8
+            elif m1_puzzle_feather_idx == 1:
+                add "images/map01/mark/feather_mask6.png" xalign 0.5 yalign 0.2 zoom 0.8
+            elif m1_puzzle_feather_idx == 2:
+                add "images/map01/mark/feather_mask7.png" xalign 0.5 yalign 0.2 zoom 0.8
+                
+            # Label
+            text "Mô Phỏng Nghi Phạm" color "#3e2723" xalign 0.5 yalign 0.95 size 20 bold True
 
-        # Eye Shape
-        hbox:
-            spacing 20
-            text "Dáng Mắt:" color "#333" min_width 200
-            textbutton "<" action SetVariable("m1_puzzle_eyes_idx", (m1_puzzle_eyes_idx - 1) % 3)
-            text "[m1_eye_options[m1_puzzle_eyes_idx]]" color "#000" min_width 150 xalign 0.5
-            textbutton ">" action SetVariable("m1_puzzle_eyes_idx", (m1_puzzle_eyes_idx + 1) % 3)
+        # Right Panel: Controls
+        frame:
+            background Frame("gui/frame.png", 10, 10) # Using default frame for better look
+            xsize 450
+            ysize 450
+            padding (30, 30)
+            
+            vbox:
+                spacing 25
+                yalign 0.5
+                
+                text "ĐẶC ĐIỂM NHẬN DẠNG" color "#ffffff" outlines [(2, "#3e2723", 0, 0)] bold True size 30 xalign 0.5
 
-        # Border
-        hbox:
-            spacing 20
-            text "Viền:" color "#333" min_width 200
-            textbutton "<" action SetVariable("m1_puzzle_border_idx", (m1_puzzle_border_idx - 1) % 3)
-            text "[m1_border_options[m1_puzzle_border_idx]]" color "#000" min_width 150 xalign 0.5
-            textbutton ">" action SetVariable("m1_puzzle_border_idx", (m1_puzzle_border_idx + 1) % 3)
+                null height 10
 
-        # Feather
-        hbox:
-            spacing 20
-            text "Lông Vũ:" color "#333" min_width 200
-            textbutton "<" action SetVariable("m1_puzzle_feather_idx", (m1_puzzle_feather_idx - 1) % 3)
-            text "[m1_feather_options[m1_puzzle_feather_idx]]" color "#000" min_width 150 xalign 0.5
-            textbutton ">" action SetVariable("m1_puzzle_feather_idx", (m1_puzzle_feather_idx + 1) % 3)
+                # Eye Shape Control
+                hbox:
+                    spacing 15
+                    xalign 0.5
+                    text "Dáng Mắt:" color "#fff" outlines [(1, "#000", 0, 0)] min_width 120 yalign 0.5 size 22
+                    textbutton "◀":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff" 
+                        action SetVariable("m1_puzzle_eyes_idx", (m1_puzzle_eyes_idx - 1) % 4)
+                    text "Kiểu [m1_puzzle_eyes_idx + 1]" color "#ffff88" min_width 100 xalign 0.5 yalign 0.5 size 22 bold True
+                    textbutton "▶":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff"
+                        action SetVariable("m1_puzzle_eyes_idx", (m1_puzzle_eyes_idx + 1) % 4)
 
-        textbutton "Xác Nhận Đối Chiếu":
-            xalign 0.5
-            action Function(m1_check_puzzle)
+                # Border Control
+                hbox:
+                    spacing 15
+                    xalign 0.5
+                    text "Viền:" color "#fff" outlines [(1, "#000", 0, 0)] min_width 120 yalign 0.5 size 22
+                    textbutton "◀":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff"
+                        action SetVariable("m1_puzzle_border_idx", (m1_puzzle_border_idx - 1) % 3)
+                    text "[m1_border_options[m1_puzzle_border_idx]]" color "#ffff88" min_width 100 xalign 0.5 yalign 0.5 size 22 bold True
+                    textbutton "▶":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff"
+                        action SetVariable("m1_puzzle_border_idx", (m1_puzzle_border_idx + 1) % 3)
+
+                # Feather Control
+                hbox:
+                    spacing 15
+                    xalign 0.5
+                    text "Lông Vũ:" color "#fff" outlines [(1, "#000", 0, 0)] min_width 120 yalign 0.5 size 22
+                    textbutton "◀":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff"
+                        action SetVariable("m1_puzzle_feather_idx", (m1_puzzle_feather_idx - 1) % 3)
+                    
+                    # Dynamic Label
+                    if m1_puzzle_feather_idx == 0:
+                        text "Xanh" color "#2196F3" outlines [(1, "#fff", 0, 0)] min_width 100 xalign 0.5 yalign 0.5 size 22 bold True
+                    elif m1_puzzle_feather_idx == 1:
+                        text "Hồng" color "#E91E63" outlines [(1, "#fff", 0, 0)] min_width 100 xalign 0.5 yalign 0.5 size 22 bold True
+                    elif m1_puzzle_feather_idx == 2:
+                        text "Tím" color "#9C27B0" outlines [(1, "#fff", 0, 0)] min_width 100 xalign 0.5 yalign 0.5 size 22 bold True
+                        
+                    textbutton "▶":
+                        text_size 30
+                        text_color "#ffcc80"
+                        text_hover_color "#ffffff"
+                        action SetVariable("m1_puzzle_feather_idx", (m1_puzzle_feather_idx + 1) % 3)
+
+                null height 30
+                
+                textbutton "XÁC NHẬN ĐỐI CHIẾU":
+                    xalign 0.5
+                    text_size 24
+                    text_color "#ffffff"
+                    text_idle_color "#ffffff" 
+                    text_hover_color "#ffff00"
+                    text_outlines [(2, "#3e2723", 0, 0)]
+                    padding (30, 15)
+                    background Frame("gui/button/choice_idle_background.png", 5, 5)
+                    hover_background Frame("gui/button/choice_hover_background.png", 5, 5)
+                    action Function(m1_check_puzzle)
 
     if m1_puzzle_solved:
-        text "Chính xác! Đã mở khóa manh mối mới." color "#008000" xalign 0.5 yalign 0.8
+        text "Chính xác! Đã mở khóa manh mối mới." color "#00cc00" outlines [(1, "#fff", 0, 0)] size 24 bold True xalign 0.5 yalign 0.85
 
 # Init Python for Mechanics
 init python:
@@ -374,7 +514,8 @@ init python:
                 m1_clues.append(msg)
                 renpy.notify("SUY LUẬN CHÍNH XÁC!")
         else:
-            renpy.notify("Suy luận chưa chính xác.")
+            m1_reduce_mind(15, "Suy luận sai")
+            renpy.notify("Suy luận sai! (-15 Mind)")
 
     def m1_init_game():
         global m1_mind, m1_time, m1_clues, m1_evidence, m1_inventory, m1_affection, m1_fear
@@ -437,14 +578,54 @@ label map1_start:
     # --- PHASE 1: INTRO ---
     
     # Scene 1: Party
-    "Nỗi sợ của bạn là: [m1_fear]"
-    "Dạ tiệc của những chiếc mặt nạ. Nơi danh tính bị xóa nhòa."
-    "Đại sảnh biệt thự lộng lẫy, ánh đèn vàng kim, nhạc cổ điển du dương."
+    # Scene 1: Cinematic Intro
+    # Scene 1: Cinematic Intro
+    scene screen_intro_01:
+        size (1920, 1080)
+    with fade
+    
+    # Zoom 1
+    camera:
+        perspective True
+        linear 3.0 zoom 1.2 xalign 0.5 yalign 0.5
+    "Bóng tối bao trùm lên những linh hồn lạc lối, nơi mặt nạ che giấu đi bản ngã thật sự."
+    
+    # Zoom 2
+    camera:
+        perspective True
+        linear 3.0 zoom 1.5 xalign 0.2 yalign 0.2
+    "Một bữa tiệc hào nhoáng... hay là sân khấu cho một vở kịch đẫm máu sắp hạ màn?"
+
+    # Zoom 3
+    camera:
+        perspective True
+        linear 3.0 zoom 2.0 xalign 0.8 yalign 0.8
+    "Kẻ sát nhân đang lẩn khuất đâu đó, mỉm cười sau lớp mặt nạ vô cảm..."
+
+    # Transition to Lobby
+    camera:
+        perspective True
+        linear 1.0 zoom 1.0 xalign 0.5 yalign 0.5
+        
+    scene bg m1_hall with fade
+    
+    # Play Party Music and Crowd Ambience
+    play music "audio/nhac_khan_phong_01.mp3" fadein 2.0 loop
+    play sound "audio/crowd-noise.mp3" fadein 2.0 loop volume 0.5
+
+    "Đại sảnh biệt thự lộng lẫy hiện ra trước mắt."
     "Trong thế giới của những chiếc mặt nạ, danh tính bị xóa nhòa. Muốn nhớ ai, phải nhớ trang phục và những phụ kiện nhỏ nhất trên người họ."
+    
+    # Fear Debuff Intro
+    "Trong mỗi con người đều có 1 nỗi sợ, từ khi sinh ra tôi bị mắc hội chứng [m1_fear]. thật là phiền phức"
 
     # Scene 2: The Conflict
     "Tại một góc khuất trong đại sảnh..."
-    "Tại một góc khuất trong đại sảnh..."
+    
+    # Show Crowd and Characters
+    show m1_crowd_1 at m1_c1_tf behind m1_v_img, m1_l_img
+    show m1_crowd_2 at m1_c2_tf behind m1_v_img, m1_l_img
+    
     show m1_v_img at m1_v_tf
     show m1_l_img at m1_l_tf
     m1_l "Mày... mày sẽ hủy hoại tất cả chúng tao!"
@@ -454,12 +635,13 @@ label map1_start:
     
     "Cách đó không xa, Sophia đang lo lắng, hai tay xoắn vào nhau."
     "Elena quan sát điềm tĩnh, ánh mắt sắc lạnh."
-    "Cách đó không xa, Sophia đang lo lắng, hai tay xoắn vào nhau."
-    "Elena quan sát điềm tĩnh, ánh mắt sắc lạnh."
     show m1_e_img at m1_e_tf
+    show m1_s_img at m1_s_tf
+    "Elena cúi xuống thì thầm vào tai Sophia."
     m1_e "Cậu thấy chưa Sophia? Hắn ta sẽ hủy hoại tất cả chúng ta."
-    "Câu nói khiến Sophia càng thêm hoảng loạn."
+    "Câu nói mang tính thao túng, khiến Sophia càng thêm hoảng loạn."
     hide m1_e_img
+    hide m1_s_img
 
     # Scene 3: Choice (Interactive)
     # Hide characters to use the screen's imagebuttons
@@ -492,8 +674,11 @@ label m1_talk_victor_leonard:
 label m1_talk_sophia:
     $ m1_add_clue("Son môi Sophia: Màu đỏ rượu vang")
     $ m1_add_clue("Sophia khen mặt nạ Mèo của Elena")
+    "Sophia đang run rẩy tô lại son."
     m1_s "Elena vừa tặng tôi thỏi son màu đỏ rượu vang này, cô ấy nói nó giúp tôi mạnh mẽ hơn."
     m1_s "Mặt nạ dáng mắt mèo của cậu ấy đẹp thật."
+    # Unlock free interrogation for Sophia later
+    $ m1_gain_affection("Sophia", 50) 
     jump m1_scene_4
 
 label m1_talk_elena:
@@ -501,6 +686,8 @@ label m1_talk_elena:
     "Elena cầm ly rượu, mỉm cười thân thiện."
     "Cô khen chiếc khăn tay thêu tên của Sophia để gây sự chú ý vào nó."
     "Tôi ghi nhớ chiếc mặt nạ Elena đang đeo: Dáng mắt mèo, viền mạ vàng, và có chùm lông vũ tím bên thái dương."
+    # Unlock free interrogation for Elena later
+    $ m1_gain_affection("Elena", 50)
     jump m1_scene_4
 
 label m1_talk_thomas:
@@ -526,9 +713,11 @@ label m1_scene_4:
     
     # Scene 6: The Scream
     scene black
-    stop music
-    play sound "audio/glass_break.ogg" # Placeholder
+    stop music fadeout 1.0
+    stop sound fadeout 1.0
+    play sound "audio/broken-glass.mp3"
     "XOẢNG!"
+    play sound "audio/man-scream.mp3"
     m1_t "CÓ NGƯỜI CHẾT! ÔNG VICTOR...!!!"
     
     # Scene 7: Crime Scene (Interactive)
@@ -545,6 +734,7 @@ label m1_scene_4:
     "Thomas run rẩy nép cửa. Leonard, Sophia, Elena chạy tới."
     
     # --- PHASE 2: INVESTIGATION ---
+    play music "audio/nhac_dieu_tra.mp3" fadein 2.0
     
     "Giai đoạn Điều Tra bắt đầu. Tôi có [m1_time] đơn vị thời gian."
     jump m1_investigation_hub
@@ -560,14 +750,30 @@ label m1_investigation_hub:
     
     if _choice == "thomas":
         if m1_mind < 7:
-            "Không đủ Mind."
+            "Không đủ Mind (-7)."
             jump m1_investigation_hub
-        $ m1_reduce_mind(7, "Phỏng vấn")
-        m1_t "Tôi đứng ở góc khuất nên không thấy rõ mặt. Nhưng lúc người đó đi ngang qua ánh đèn, tôi chắc chắn đã thấy một chùm lông vũ màu tím rất lớn bên thái dương."
-        $ m1_gain_affection("Thomas", 20)
-        $ m1_add_clue("Thomas: Hung thủ có lông vũ tím trên mặt nạ")
-        if m1_affection["Thomas"] >= 100:
-            "Thomas có vẻ tin tưởng tôi hoàn toàn."
+        
+        if m1_affection["Thomas"] >= 50:
+            "Thomas rất quý mến bạn. Anh ấy trả lời không do dự. (Không tốn Mind)"
+        else:
+            $ m1_reduce_mind(7, "Phỏng vấn Thomas")
+        
+        # Ensure scene and char
+        scene bg m1_hall
+        show m1_t_img at m1_interrogate_tf
+        
+        # Panic Mechanic (Affection < 40)
+        if m1_affection["Thomas"] < 40:
+            m1_t "Tôi... tôi sợ lắm! Đừng hỏi nữa!"
+            m1_t "Tôi... tôi nghĩ mình thấy... lông vũ màu ĐỎ! Đúng, là màu đỏ!"
+            $ m1_add_clue("Thomas (Hoảng loạn): Lông vũ màu ĐỎ")
+        else:
+            m1_t "Tôi đứng ở góc khuất nên không thấy rõ mặt. Nhưng lúc người đó đi ngang qua ánh đèn, tôi chắc chắn đã thấy một chùm lông vũ màu tím rất lớn bên thái dương."
+            $ m1_gain_affection("Thomas", 20)
+            $ m1_add_clue("Thomas: Hung thủ có lông vũ tím trên mặt nạ")
+            if m1_affection["Thomas"] >= 100:
+                "Thomas thì thầm: 'Tôi còn thấy một thứ nữa... ở góc phòng tiệc.'"
+        
         jump m1_investigation_hub
 
     elif _choice == "leonard":
@@ -577,32 +783,64 @@ label m1_investigation_hub:
         if m1_affection["Leonard"] > 50:
             "Leonard trả lời không do dự."
         else:
-            $ m1_reduce_mind(7, "Phỏng vấn")
+            $ m1_reduce_mind(7, "Phong van")
         
-        m1_l "Tôi chả quan tâm. Nhưng lúc tôi đi lấy rượu, tôi thấy một người phụ nữ lảng vảng gần hành lang. Mặt nạ của cô ta có viền vàng phản chiếu chói cả mắt."
-        $ m1_add_clue("Leonard: Hung thủ có viền vàng trên mặt nạ")
+        # Ensure scene and char
+        scene bg m1_hall
+        show m1_l_img at m1_interrogate_tf
+        
+        # Panic Mechanic (Affection < 40)
+        if m1_affection["Leonard"] < 40:
+            m1_l "Cút đi! Đừng làm phiền tao!"
+            m1_l "...Mà khoan, tao thấy nó là viền BẠC. Chắc chắn là BẠC! Đừng hỏi nữa!"
+            $ m1_add_clue("Leonard (Cáu gắt): Viền BẠC")
+        else:
+            m1_l "Tôi chả quan tâm. Nhưng lúc tôi đi lấy rượu, tôi thấy một người phụ nữ lảng vảng gần hành lang. Mặt nạ của cô ta có viền vàng phản chiếu chói cả mắt."
+            $ m1_add_clue("Leonard: Hung thủ có viền vàng trên mặt nạ")
+            
         jump m1_investigation_hub
 
     elif _choice == "sophia":
-        if m1_mind < 7:
-            "Không đủ Mind."
+        if m1_mind < 7 and m1_affection["Sophia"] < 50:
+            "Không đủ Mind (-7)."
             jump m1_investigation_hub
-        if m1_affection["Sophia"] > 50:
-            "Sophia trả lời thành thật."
+            
+        if m1_affection["Sophia"] >= 50:
+            "Sophia tin tưởng bạn vì cuộc trò chuyện lúc trước. (Không tốn Mind)"
         else:
-            $ m1_reduce_mind(7, "Phỏng vấn")
-        m1_s "Lúc nãy tôi thấy Elena... à không, tôi không chắc. Nhưng tôi nhớ Elena rất thích chiếc mặt nạ dáng mắt mèo của cô ấy."
-        $ m1_add_clue("Sophia: Elena thích mặt nạ mắt mèo")
+            $ m1_reduce_mind(7, "Phỏng vấn Sophia")
+        
+        # Ensure scene and char
+        scene bg m1_hall
+        show m1_s_img at m1_interrogate_tf
+        
+        # Panic Mechanic (Affection < 40)
+        if m1_affection["Sophia"] < 40:
+            m1_s "Tôi không biết... Tôi sợ lắm..."
+            m1_s "Hình như là... mắt TRÒN? Mắt to lắm... xin lỗi, tôi không nhớ rõ!"
+            $ m1_add_clue("Sophia (Hoảng loạn): Mắt TRÒN")
+        else:
+            m1_s "Lúc nãy tôi thấy Elena... à không, tôi không chắc. Nhưng tôi nhớ Elena rất thích chiếc mặt nạ dáng mắt mèo của cô ấy."
+            $ m1_add_clue("Sophia: Elena thích mặt nạ mắt mèo")
+            
         jump m1_investigation_hub
 
     elif _choice == "elena":
-        if m1_mind < 7:
-            "Không đủ Mind."
+        if m1_mind < 7 and m1_affection["Elena"] < 50:
+            "Không đủ Mind (-7)."
             jump m1_investigation_hub
-        $ m1_reduce_mind(7, "Phỏng vấn")
+            
+        if m1_affection["Elena"] >= 50:
+            "Bạn đã quan sát Elena từ trước. (Không tốn Mind)"
+        else:
+            $ m1_reduce_mind(7, "Phỏng vấn Elena")
+        
+        # Ensure scene and char
+        scene bg m1_hall
+        show m1_e_img at m1_interrogate_tf
+        
         m1_e "Tôi chẳng thấy gì cả. Tôi đang ở trong phòng nghỉ. Tại sao các người cứ hỏi tôi?"
         "Elena có vẻ né tránh câu hỏi."
-        $ m1_add_clue("Elena: Tỏ vẻ né tránh khi bị hỏi")
         jump m1_investigation_hub
 
     elif _choice == "search_hallway":
@@ -632,17 +870,21 @@ label m1_investigation_hub:
         
         if _trash_result == "found_lipstick":
             "Tìm thấy một thỏi son bị bẻ gãy đầu!"
+            "Phân tích: Hung thủ đeo găng tay để vẽ vết son giả. (-7 Mind)"
+            $ m1_reduce_mind(7, "Suy luận son môi")
             $ m1_add_evidence("Thỏi Son Gãy")
             $ m1_lipstick_found = True
-            
-            if m1_affection["Thomas"] >= 100:
-                "Thomas chỉ cho tôi một thứ khác."
-                "Một vỏ viên thuốc con nhộng (Capsule) rỗng."
-                $ m1_add_evidence("Vỏ Thuốc")
-                "Nó rất trơn, khó tách đôi khi đeo găng. Tôi tìm thấy một dấu vân tay rõ nét!"
-                $ m1_add_evidence("Dấu Vân Tay")
-                "Tôi lén lấy dấu vân tay trên ly rượu Elena uống dở ở sảnh để đối chiếu... TRÙNG KHỚP 100%"
         
+        jump m1_investigation_hub
+
+    elif _choice == "found_capsule":
+        "Tôi nhặt lên một vỏ viên thuốc con nhộng bên góc phòng."
+        $ m1_add_evidence("Vỏ Thuốc")
+        "Tôi dùng điện thoại chụp ảnh lại và gửi đi đối chiếu dấu vân tay..."
+        "..."
+        "Nó rất trơn, khó tách đôi khi đeo găng. Tôi tìm thấy một dấu vân tay rõ nét!"
+        $ m1_add_evidence("Dấu Vân Tay")
+        "Tôi lén lấy dấu vân tay trên ly rượu Elena uống dở ở sảnh để đối chiếu... NÓ HOÀN TOÀN TRÙNG KHỚP"
         jump m1_investigation_hub
 
     elif _choice == "judgment":
@@ -652,6 +894,8 @@ label m1_investigation_hub:
 
 label m1_judgment_start:
     hide screen m1_hud
+    stop music fadeout 1.0
+    play music "audio/nhac_pha_an.mp3" fadein 2.0
     scene bg m1_hall # Back to hall for judgment
     "Thời khắc phán quyết đã điểm."
     
@@ -678,66 +922,94 @@ label m1_judgment_elena:
     "Tôi cáo buộc Elena."
     m1_e "Anh nói gì vậy? Bằng chứng đâu?"
     
-    # Step 1
-    if "Thỏi Son Gãy" in m1_evidence:
-        "Tôi đưa ra Thỏi son gãy."
-        "Kẻ sát nhân đã dùng cây son này để lại vệt trên miệng ly, chứ không phải Sophia."
-        "Cô đã nhận son từ Elena, nên Elena cũng có thể có một cây tương tự."
+    # Step 1: Lipstick & Towel
+    if "Thỏi Son Gãy" in m1_evidence and "Khăn Tay" in m1_inventory:
+        "Tôi đưa ra Thỏi son gãy và Khăn tay."
+        "Kẻ sát nhân đã dùng cây son này để lại vệt trên miệng ly."
         "Khăn tay chỉ là cái bẫy vụng về."
     else:
-        "Tôi không đủ bằng chứng để phản biện về vết son..."
+        "Tôi không đủ bằng chứng để phản biện về vết son và khăn tay..."
+        jump m1_bad_end_1
         
-    # Step 2
+    # Step 2: Mask Logic
     m1_e "Mặt nạ của tôi màu Bạc, không hề có lông vũ!" 
     "(Cô ta giơ mặt nạ hiện tại ra)"
     
     if "Mặt Nạ Hung Thủ: Mắt mèo + Viền vàng + Lông vũ tím" in m1_clues:
         "Tôi tung ra 3 Lời khai (Thomas, Leonard, Sophia)."
-        "Thomas thấy lông vũ tím, Leonard thấy viền vàng, Sophia xác nhận dáng mắt mèo."
-        "Cộng lại chính là chiếc mặt nạ cô đeo lúc đầu buổi tiệc! Cô đã thay nó sau khi giết Victor!"
+        "Tổng hợp lại: Mắt mèo + Viền vàng + Lông vũ tím."
+        "Chính là chiếc mặt nạ cô đeo lúc đầu buổi tiệc!"
     else:
         "Tôi không thể chứng minh cô ta đã thay mặt nạ..."
         jump m1_bad_end_1
          
-    # Step 3
-    if "Dấu Vân Tay" in m1_evidence:
+    # Step 3: Checkmate (Require Thomas 100 & Capsule/Fingerprint)
+    if "Vỏ Thuốc" in m1_evidence and "Dấu Vân Tay" in m1_evidence and m1_affection["Thomas"] >= 100:
         "Elena vẫn cứng đầu: 'Đó chỉ là suy đoán. Không có bằng chứng tôi ở hiện trường.'"
+        
         "Tôi đưa ra Vỏ thuốc con nhộng & Kết quả đối chiếu dấu vân tay."
+        "Thomas đã chỉ điểm cho tôi vật chứng quan trọng này."
+        
         "Cô rất cẩn thận đeo găng tay khi vẽ son. Nhưng chiếc vỏ thuốc con nhộng trơn tuột đã hại cô."
         "Cô buộc phải tháo găng tay ra để tách nó, và dấu vân tay của cô đã in vĩnh viễn trên hung khí giết người này!"
         jump m1_true_end
     else:
+        "Tôi đưa ra giả thuyết về vỏ thuốc..."
+        m1_e "Anh có vỏ thuốc đó không? Hay chỉ là lời nói suông?"
+        "Tôi... không tìm thấy vỏ thuốc đó. Thomas đã không chỉ cho tôi."
         m1_e "Chỉ là suy đoán vô căn cứ."
         jump m1_bad_end_1
 
 label m1_bad_end_1:
-    "BAD ENDING: Kết tội sai"
+    stop music fadeout 2.0
+    play music "audio/bad-ending.mp3" fadein 1.0
+    scene bg m1_bad_end_1 with fade
+    "BAD ENDING 1: Kết tội sai / Thiếu bằng chứng"
+    
+    if m1_suspect_choice == "Elena":
+        "Dù tôi biết là Elena, nhưng tôi không đủ bằng chứng thuyết phục mọi người."
+    
     "Sophia bị còng tay, gào khóc thảm thiết."
     "Leonard nhìn theo vô cảm."
-    "Elena đứng trong góc tối, mỉm cười, ném chiếc mặt nạ cũ (có lông vũ tím) vào lò sưởi đang cháy."
+
+    scene bg m1_bad_end_2 with fade
+    "Elena đứng trong góc tối, mỉm cười."
+    "Cô ta cầm chiếc mặt nạ cũ (có lông vũ tím) trên tay, ánh mắt đầy sự chế giễu."
+
+    scene bg m1_bad_end_3 with fade
+    "Chiếc mặt nạ bị ném vào lò sưởi đang cháy."
     "Lửa nuốt chửng bằng chứng cuối cùng."
     "GAME OVER"
-    return
+    jump start
 
 label m1_bad_end_3:
     hide screen m1_hud
-    "BAD ENDING: Thám tử kém cỏi"
+    stop music fadeout 2.0
+    play music "audio/scary-laugh-377526.mp3" fadein 1.0
+    scene bg m1_bad_end_final with fade
+    "BAD ENDING 2: Thám tử kém cỏi"
     "Tâm trí tôi mụ mị. Tôi không thể suy luận được nữa."
-    "Elena đứng trong góc tối, mỉm cười, ném chiếc mặt nạ cũ vào lò sưởi."
-    "GAME OVER"
-    return
+    "Tất cả chúng đều đang cười nhạo tôi"
+    jump start
 
 label m1_true_end:
+    stop music fadeout 2.0
+    play music "audio/true-ending.mp3" fadein 1.0
+    scene bg m1_true_end_1 with fade
     "Elena bị vạch trần. Cô ta ngửa mặt cười lớn, ánh mắt trở nên điên dại."
     m1_e "Khá lắm. Ta đã tính hết mọi nước cờ, trừ cái vỏ thuốc chết tiệt đó."
     
+    scene bg m1_true_end_2 with hpunch
     "Elena bất ngờ rút ra một quả bom khói, ném mạnh xuống sàn."
     "Khói mù mịt tỏa ra. Tiếng kính vỡ choang."
     
     "Tôi chạy đến bên cửa sổ: Một chiếc trực thăng đen bay sát sạt, thả dây xuống."
+    play sound "audio/helicopter.mp3" loop fadein 1.0
     "Elena đu dây tẩu thoát, bỏ lại hiện trường hỗn loạn."
     
+    scene bg m1_true_end_3 with fade
+    stop sound fadeout 2.0 # Stop helicopter
     "Tuy hung thủ chạy thoát, nhưng Sophia được minh oan."
-    "Tôi nhận được tin nhắn từ Elena: 'Ván cờ mới chỉ bắt đầu.'"
-    "TRUE ENDING (Phá án thành công)"
-    return
+    "Tôi nhận được một tấm thẻ bài từ Elena: 'Ván cờ mới chỉ bắt đầu.'"
+    "TRUE ENDING"
+    jump start
