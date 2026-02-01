@@ -30,43 +30,37 @@ screen m1_crime_scene():
     # Background
     add "bg m1_bathroom"
     
-    # Victor's dead body (center-bottom) - clickable to examine
+    # === POSER TOOL ===
+    use m1_crime_scene_poser
+    
+    # Victor's dead body - using persistent positions
     if not m1_examined_body:
         imagebutton:
-            idle Transform("images/map01/character/Victor_dead.png", zoom=0.8)
-            hover Transform("images/map01/character/Victor_dead.png", zoom=0.8, matrixcolor=TintMatrix("#ffff88"))
-            xalign 0.5
-            yalign 0.85
+            idle Transform("images/map01/character/Victor_dead.png", zoom=persistent.m1_cs_body_zoom)
+            hover Transform("images/map01/character/Victor_dead.png", zoom=persistent.m1_cs_body_zoom, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_cs_body_x
+            ypos persistent.m1_cs_body_y
             action Function(m1_examine_body)
-            tooltip "🔍 Khám xác Victor"
+            tooltip "Kham xac Victor"
     else:
-        # After examination, just show the body
         add "images/map01/character/Victor_dead.png":
-            xalign 0.5
-            yalign 0.85
-            zoom 0.8
+            xpos persistent.m1_cs_body_x
+            ypos persistent.m1_cs_body_y
+            zoom persistent.m1_cs_body_zoom
     
-    # Glass - left side (REPLACE with actual image path if available)
+    # Glass - using persistent positions
     if not m1_crime_collected_glass:
         imagebutton:
-            # Use placeholder or actual image
-            idle Solid("#ff6b6b80", xysize=(100, 100))  # Red placeholder for glass
-            hover Solid("#ff6b6b", xysize=(100, 100))
-            xpos 300
-            ypos 750
-            action Function(m1_collect_item, "Ly rượu vỡ có vết son", "m1_crime_collected_glass")
-            tooltip "🍷 Ly rượu vỡ"
+            idle Transform("images/map01/object/wine_glass.png", zoom=persistent.m1_cs_glass_zoom)
+            hover Transform("images/map01/object/wine_glass.png", zoom=persistent.m1_cs_glass_zoom + 0.05, matrixcolor=TintMatrix("#ffff88"))
+            focus_mask True
+            xpos persistent.m1_cs_glass_x
+            ypos persistent.m1_cs_glass_y
+            action Function(m1_collect_item, "Ly ruou vo co vet son", "m1_crime_collected_glass")
+            tooltip "Ly ruou vo"
     
-    # Towel - right side (REPLACE with actual image path if available)
-    if not m1_crime_collected_towel:
-        imagebutton:
-            # Use placeholder or actual image
-            idle Solid("#4ecdc480", xysize=(120, 80))  # Green placeholder for towel
-            hover Solid("#4ecdc4", xysize=(120, 80))
-            xpos 1450
-            ypos 780
-            action Function(m1_collect_item, "Khăn tay có chữ E thêu", "m1_crime_collected_towel")
-            tooltip "🧣 Khăn tay"
+
     
     # Tooltip display
     $ tooltip = GetTooltip()
@@ -104,80 +98,95 @@ screen m1_crime_scene():
         hbox:
             spacing 30
             if not m1_examined_body:
-                text "⚠ Hãy khám xác trước khi tiếp tục" size 18 color "#ff8"
+                text "Hãy khám xác trước khi tiếp tục" size 18 color "#ff8"
             if m1_examined_body:
-                textbutton "✓ Tiếp tục":
-                    action Return()
+                textbutton "Tiếp tục":
+                    action [Hide("m1_crime_scene"), Return("continue")]
                     text_size 20
                     text_color "#0f0"
             else:
-                textbutton "✓ Tiếp tục":
+                textbutton "Tiếp tục":
                     action NullAction()
                     text_size 20
                     text_color "#666"
 
-# Inventory Screen - Enhanced design
+# Inventory Screen - Clean design
+init python:
+    def m1_get_item_image(item_name):
+        if "Ly ruou" in item_name or "Ly Rượu" in item_name: # Handle both cases
+            return "images/map01/object/wine_glass.png"
+        elif "Khan tay" in item_name or "Khăn Tay" in item_name:
+            return "images/map01/object/handkerchief.png"
+        return "images/map01/UI/bag.png" # Default icon
+
 screen m1_inventory_screen():
-    tag menu
     modal True
+    zorder 200
     
-    # Dim background
-    add Solid("#00000080")
+    # Click outside to close
+    button:
+        xfill True
+        yfill True
+        background Solid("#00000099")
+        action Hide("m1_inventory_screen")
     
+    # Inventory panel
     frame:
         xalign 0.5
         yalign 0.5
-        xsize 500
-        ysize 450
-        padding (25, 25)
-        background Solid("#1a1a1aF5")
+        xsize 420
+        ypadding 20
+        xpadding 25
+        background Solid("#1a1a1aF0")
         
         vbox:
-            spacing 12
+            spacing 15
             
-            # Header
+            # Header  
             hbox:
                 xfill True
-                hbox:
-                    spacing 10
-                    add "images/map01/UI/bag.png" zoom 0.4
-                    text "TÚI ĐỒ" size 26 color "#0f0" bold True yalign 0.5
-                textbutton "✕":
-                    xalign 1.0
-                    action Hide("m1_inventory_screen")
-                    text_size 22
-                    text_color "#f00"
-            
-            null height 5
-            
-            # Separator
-            add Solid("#333", xysize=(450, 2))
-            
-            null height 5
-            
-            # Items list (scrollable viewport)
-            viewport:
-                scrollbars "vertical"
-                mousewheel True
-                xsize 450
-                ysize 300
+                spacing 12
                 
-                vbox:
-                    spacing 8
-                    if m1_inventory:
-                        for item in m1_inventory:
-                            frame:
-                                xfill True
-                                padding (12, 8)
-                                background Solid("#2a2a2a")
-                                hbox:
-                                    spacing 10
-                                    text "📦" size 16
-                                    text f"{item}" size 16 color "#fff"
-                    else:
+                add "images/map01/UI/bag.png":
+                    zoom 0.35
+                    yalign 0.5
+                
+                text "TUI DO" size 22 color "#0f0" bold True yalign 0.5
+                
+                # Close button - right aligned
+                hbox:
+                    xalign 1.0
+                    textbutton "X":
+                        action Hide("m1_inventory_screen")
+                        text_size 18
+                        text_color "#f66"
+                        text_hover_color "#f00"
+            
+            # Line separator
+            add Solid("#444", xysize=(370, 1))
+            
+            # Items list
+            vbox:
+                spacing 6
+                xsize 370
+                
+                if m1_inventory and len(m1_inventory) > 0:
+                    for item in m1_inventory:
                         frame:
                             xfill True
-                            ysize 100
-                            background Solid("#222")
-                            text "Túi rỗng" size 18 color "#666" xalign 0.5 yalign 0.5 italic True
+                            padding (10, 8)
+                            background Solid("#2a2a2a")
+                            
+                            hbox:
+                                spacing 15
+                                add m1_get_item_image(item):
+                                    zoom 0.4
+                                    maxsize (40, 40)
+                                    yalign 0.5
+                                    
+                                text item size 15 color "#ddd" yalign 0.5
+                else:
+                    null height 30
+                    text "( Trong )" size 16 color "#555" xalign 0.5 italic True
+                    null height 30
 

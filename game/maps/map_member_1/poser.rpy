@@ -9,23 +9,26 @@ init python:
     def m1_poser_get_x():
         t = store.m1_poser_target
         if store.m1_poser_mode == "sel":
-            return getattr(persistent, f"m1_sel_{t}_x", 500)
+            val = getattr(persistent, f"m1_sel_{t}_x", 500)
         else:
-            return getattr(persistent, f"m1_{t}_xpos", 500)
+            val = getattr(persistent, f"m1_{t}_xpos", 500)
+        return val if val is not None else 500
     
     def m1_poser_get_y():
         t = store.m1_poser_target
         if store.m1_poser_mode == "sel":
-            return getattr(persistent, f"m1_sel_{t}_y", 500)
+            val = getattr(persistent, f"m1_sel_{t}_y", 500)
         else:
-            return getattr(persistent, f"m1_{t}_ypos", 800)
+            val = getattr(persistent, f"m1_{t}_ypos", 800)
+        return val if val is not None else 800
     
     def m1_poser_get_z():
         t = store.m1_poser_target
         if store.m1_poser_mode == "sel":
-            return getattr(persistent, f"m1_sel_{t}_zoom", 1.0)
+            val = getattr(persistent, f"m1_sel_{t}_zoom", 1.0)
         else:
-            return getattr(persistent, f"m1_{t}_zoom", 1.0)
+            val = getattr(persistent, f"m1_{t}_zoom", 1.0)
+        return val if val is not None else 1.0
 
     def m1_poser_set_x(val):
         t = store.m1_poser_target
@@ -127,7 +130,7 @@ screen m1_poser_tool():
                 text "Char:" color "#aaa" size 12
                 hbox:
                     spacing 6
-                    for c in ["v", "l", "e", "s", "t"]:
+                    for c in ["v", "l", "e", "s", "t", "c1", "c2"]:
                         textbutton c.upper():
                             action SetVariable("m1_poser_target", c)
                             text_size 16
